@@ -377,7 +377,7 @@
                 const studentId = entry.getAttribute('data-student-id');
                 const studentNameInput = document.getElementById(`studentName_${studentId}`);
                 const jazzBandInput = document.getElementById(`jazzBand_${studentId}`);
-                const numButtonsInput = document.getElementById(`numPhotos_${studentId}`);
+                const numPhotosInput = document.getElementById(`numPhotos_${studentId}`);
 
                 // Client-side validation for student fields
                 if (!studentNameInput.value.trim()) {
@@ -391,16 +391,16 @@
                     jazzBandInput.focus();
                     isValid = false; return;
                 }
-                if (parseInt(numButtonsInput.value) <= 0) {
+                if (parseInt(numPhotosInput.value) <= 0) {
                     showMessage('Number of photos for each student must be greater than 0.', true);
-                    numButtonsInput.focus();
+                    numPhotosInput.focus();
                     isValid = false; return;
                 }
 
                 students.push({
                     name: studentNameInput.value,
                     jazzBand: jazzBandInput.value,
-                    numButtons: numButtonsInput.value
+                    numButtons: numPhotosInput.value
                 });
             });
 
