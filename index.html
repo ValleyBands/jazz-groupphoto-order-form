@@ -400,7 +400,7 @@
                 students.push({
                     name: studentNameInput.value,
                     jazzBand: jazzBandInput.value,
-                    numButtons: numPhotosInput.value
+                    numPhotos: numPhotosInput.value
                 });
             });
 
@@ -419,7 +419,7 @@
 
             const currentTotal = parseFloat(document.getElementById('hiddenTotalCost').value);
             if (currentTotal <= 0) {
-                showMessage('Total number of buttons must be greater than $0.00.', true);
+                showMessage('Total number of photos must be greater than $0.00.', true);
                 return;
             }
 
