@@ -140,7 +140,7 @@
 <body>
     <div class="container">
         <h1 class="text-3xl font-bold text-gray-800 mb-6 text-center">Jazz Band Group Photo Order Form</h1>
-        <p class="text-gray-600 mb-8 text-center">Each Group Photo costs <span class="font-semibold text-indigo-600">$15.45</span>. Data will be submitted to the Google Sheet.</p>
+        <p class="text-gray-600 mb-8 text-center">Each Group Photo costs <span class="font-semibold text-indigo-600">$15.45</span>.</p>
             <div class="mb-8 text-center">
               <h2 class="text-xl font-semibold text-gray-800 mb-4">Group Photo Example:</h2>
               <img
@@ -185,8 +185,8 @@
                         <option value="Studio Jazz">Studio Jazz</option>
                     </select>
 
-                    <label for="numphotos_1">Number of Group Photos for Student 1:</label>
-                    <input type="number" id="numphotos_1" name="numphotos_1" min="0" value="0" oninput="calculateTotal()" required>
+                    <label for="numPhotos_1">Number of Group Photos for Student 1:</label>
+                    <input type="number" id="numPhotos_1" name="numPhotos_1" min="0" value="0" oninput="calculateTotal()" required>
                 </div>
             </div>
 
@@ -392,7 +392,7 @@
                     isValid = false; return;
                 }
                 if (parseInt(numButtonsInput.value) <= 0) {
-                    showMessage('Number of buttons for each student must be greater than 0.', true);
+                    showMessage('Number of photos for each student must be greater than 0.', true);
                     numButtonsInput.focus();
                     isValid = false; return;
                 }
