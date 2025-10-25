@@ -140,14 +140,14 @@
 <body>
     <div class="container">
         <h1 class="text-3xl font-bold text-gray-800 mb-6 text-center">Jazz Band Group Photo Order Form</h1>
-        <p class="text-gray-600 mb-8 text-center">Each Group Photo costs <span class="font-semibold text-indigo-600">$15.45</span>.</p>
+        <p class="text-gray-600 mb-8 text-center">Each Group Photo costs <span class="font-semibold text-indigo-600">$15.45</span>. Data will be submitted to the Google Sheet.</p>
             <div class="mb-8 text-center">
               <h2 class="text-xl font-semibold text-gray-800 mb-4">Group Photo Example:</h2>
               <img
                 src="https://raw.githubusercontent.com/ValleyBands/jazz-groupphoto-order-form/main/Basie%20Band_2.png"
                 alt="Example band group photo"
                 class="mx-auto shadow-lg border-4 border-indigo-300"
-                style="width:5in; height:auto; border-radius:0; object-fit:contain;"
+                style="width:2in; height:auto; border-radius:0; object-fit:contain;"
                 onerror="this.onerror=null;this.src='https://placehold.co/192x120/cccccc/000000?text=Band+Group+Photo';"
               >
               <p class="text-sm text-gray-500 mt-2">Example Band Group Photo</p>
@@ -185,8 +185,8 @@
                         <option value="Studio Jazz">Studio Jazz</option>
                     </select>
 
-                    <label for="numPhotos_1">Number of Group Photos for Student 1:</label>
-                    <input type="number" id="numPhotos_1" name="numPhotos_1" min="0" value="0" oninput="calculateTotal()" required>
+                    <label for="numphotos_1">Number of Group Photos for Student 1:</label>
+                    <input type="number" id="numphotos_1" name="numphotos_1" min="0" value="0" oninput="calculateTotal()" required>
                 </div>
             </div>
 
@@ -195,14 +195,14 @@
             <div class="bg-indigo-100 p-6 rounded-lg border-2 border-indigo-300 mt-8">
                 <p class="text-xl text-indigo-800 font-semibold mb-2 text-center">Total Cost for All Group Photos:</p>
                 <p id="totalCost" class="text-5xl font-extrabold text-indigo-700 text-center">$0.00</p>
-                <input type="hidden" id="hiddenTotalCost" name="totalCost" value="0.00"> 
-                </div>
+                <input type="hidden" id="hiddenTotalCost" name="totalCost" value="0.00">
+            </div>
 
             <button type="submit" class="mt-8">Submit Order and Pay Here</button>
         </form>
 
         <div class="payment-link-section">
-            <p class="text-gray-600">If re-direct to payment site doesn't work please use this link: <a href="https://checkout.square.site/merchant/44QXX4R2B839B/checkout/MZPG4FERMHY4P5LDQ5HCVFZ2" target="_blank">Payment Link</a></p>
+            <p class="text-gray-600">If re-direct to payment site doesn't work please use this link: <a href="https://checkout.square.site/merchant/44QXX4R2B839B/checkout/AWBE6FFXZQALGDPUHMAAC46C" target="_blank">Payment Link</a></p>
         </div>
         <div id="messageBox" class="message-box"></div>
     </div>
@@ -214,6 +214,8 @@
 
         // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
         // !!! IMPORTANT: MAKE SURE THIS URL IS CORRECT AND POINTS TO YOUR LATEST DEPLOYMENT (Who has access: Anyone)
+        // !!! Your previously provided SCRIPT_URL:
+        // 'https://script.google.com/macros/s/AKfycbxCH2qAky8y-ZibI22LOlgOEdF1U07Iit-d-HSfNHkTLlBMb1vPfi8Env1xGGlkjlKBNQ/exec'
         const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxPUwE2ZrGvZtMa2qsNEXByYta7FmvIaBFaYa-nevyf16nGcNrthsplLEyyLjE4GpS9/exec'; 
         // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
         
@@ -341,8 +343,8 @@
                         <option value="Studio Jazz">Studio Jazz</option>
                     </select>
 
-                    <label for="numPhotos_1">Number of Group Photos for Student 1:</label>
-                    <input type="number" id="numPhotos_1" name="numPhotos_1" min="0" value="0" oninput="calculateTotal()" required>
+                    <label for="numphotos_1">Number of Group Photos for Student 1:</label>
+                    <input type="number" id="numphotos_1" name="numphotos_1" min="0" value="0" oninput="calculateTotal()" required>
                 </div>
             `;
             studentCounter = 1; // Reset counter
@@ -367,8 +369,6 @@
             const data = {};
             const students = [];
             let isValid = true; // Flag to track student validation
-            // 💡 FIX: Initialize totalPhotosCount to be sent to the backend
-            let totalPhotosCount = 0; 
 
             // Manually collect student data and perform validation
             document.querySelectorAll('.student-entry').forEach((entry, index) => {
@@ -377,9 +377,7 @@
                 const studentId = entry.getAttribute('data-student-id');
                 const studentNameInput = document.getElementById(`studentName_${studentId}`);
                 const jazzBandInput = document.getElementById(`jazzBand_${studentId}`);
-                const numPhotosInput = document.getElementById(`numPhotos_${studentId}`);
-                
-                const numPhotos = parseInt(numPhotosInput.value) || 0; // Get the number of photos
+                const numButtonsInput = document.getElementById(`numPhotos_${studentId}`);
 
                 // Client-side validation for student fields
                 if (!studentNameInput.value.trim()) {
@@ -393,19 +391,16 @@
                     jazzBandInput.focus();
                     isValid = false; return;
                 }
-                if (numPhotos <= 0) {
-                    showMessage('Number of photos for each student must be greater than 0.', true);
-                    numPhotosInput.focus();
+                if (parseInt(numButtonsInput.value) <= 0) {
+                    showMessage('Number of buttons for each student must be greater than 0.', true);
+                    numButtonsInput.focus();
                     isValid = false; return;
                 }
-
-                // 💡 FIX: Accumulate the total photo count
-                totalPhotosCount += numPhotos; 
 
                 students.push({
                     name: studentNameInput.value,
                     jazzBand: jazzBandInput.value,
-                    numPhotos: numPhotos // Use the parsed number
+                    numButtons: numButtonsInput.value
                 });
             });
 
@@ -419,15 +414,12 @@
                 }
             }
             
-            // 💡 FIX: Add the calculated total number of photos to the data object
-            data['totalNumPhotos'] = totalPhotosCount;
-
             // Add the structured students data (as a JSON string)
             data['students'] = JSON.stringify(students);
 
             const currentTotal = parseFloat(document.getElementById('hiddenTotalCost').value);
             if (currentTotal <= 0) {
-                showMessage('Total cost must be greater than $0.00. Please order photos.', true);
+                showMessage('Total number of buttons must be greater than $0.00.', true);
                 return;
             }
 
