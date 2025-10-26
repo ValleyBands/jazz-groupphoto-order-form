@@ -357,10 +357,31 @@
         document.getElementById('bandOrderForm').addEventListener('submit', async (event) => {
             event.preventDefault(); // Prevent default form submission
 
+            const submitButton = event.submitter;
+
+            // --- START: SUBMIT BUTTON RED STYLING ---
+            if (submitButton) {
+                // Store original classes and apply new ones for "clicked" state
+                submitButton.classList.remove('bg-22c55e', 'hover:bg-16a34a'); // Remove original green
+                submitButton.classList.add('bg-red-600', 'hover:bg-red-700'); // Apply red
+                submitButton.textContent = 'Submitting...';
+                submitButton.disabled = true; // Disable to prevent double-clicks
+            }
+            // --- END: SUBMIT BUTTON RED STYLING ---
+
             const phoneInput = document.getElementById('phone');
             const phoneNumber = phoneInput.value.replace(/\D/g, '');
             if (phoneNumber.length !== 10) {
                 showMessage('Please enter a valid 10-digit phone number.', true);
+
+                // RESTORE BUTTON ON FAILURE
+                if (submitButton) {
+                    submitButton.classList.remove('bg-red-600', 'hover:bg-red-700');
+                    submitButton.classList.add('bg-22c55e', 'hover:bg-16a34a');
+                    submitButton.textContent = 'Submit Order and Pay Here';
+                    submitButton.disabled = false;
+                }
+                
                 phoneInput.focus();
                 return; // Stop submission
             }
