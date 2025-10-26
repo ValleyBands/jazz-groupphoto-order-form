@@ -222,6 +222,14 @@
         
         const BASE_PAYMENT_REDIRECT_URL = 'https://checkout.square.site/merchant/44QXX4R2B839B/checkout/MZPG4FERMHY4P5LDQ5HCVFZ2';
 
+        // Use the actual Tailwind class names for easy reference:
+        const ORIGINAL_BG_CLASS = 'bg-green-600'; // Represents #22c55e
+        const ORIGINAL_HOVER_CLASS = 'hover:bg-green-700'; // Represents #16a34a
+        const LOADING_BG_CLASS = 'bg-red-600';
+        const LOADING_HOVER_CLASS = 'hover:bg-red-700';
+        const ORIGINAL_TEXT = 'Submit Order and Pay Here';
+        const LOADING_TEXT = 'Submitting...';
+        
         /**
          * Automatically formats a phone number as ###-###-#### as the user types.
          * @param {HTMLElement} input - The input field element.
@@ -352,6 +360,16 @@
             calculateTotal(); // Recalculate total after reset
         }
 
+        // Centralized logic to restore the button's appearance
+        function resetButtonState(submitButton) {
+            if (submitButton) {
+                submitButton.classList.remove(LOADING_BG_CLASS, LOADING_HOVER_CLASS);
+                submitButton.classList.add(ORIGINAL_BG_CLASS, ORIGINAL_HOVER_CLASS);
+                submitButton.textContent = ORIGINAL_TEXT;
+                submitButton.disabled = false;
+            }
+        }
+
 
         // Handle form submission
         document.getElementById('bandOrderForm').addEventListener('submit', async (event) => {
@@ -359,29 +377,21 @@
 
             const submitButton = event.submitter;
 
-            // --- START: SUBMIT BUTTON RED STYLING ---
+            // --- Apply Red/Loading State ---
             if (submitButton) {
-                // Store original classes and apply new ones for "clicked" state
-                submitButton.classList.remove('bg-22c55e', 'hover:bg-16a34a'); // Remove original green
-                submitButton.classList.add('bg-red-600', 'hover:bg-red-700'); // Apply red
-                submitButton.textContent = 'Submitting...';
-                submitButton.disabled = true; // Disable to prevent double-clicks
+                // IMPORTANT FIX: Removing the proper green classes and adding the red ones
+                submitButton.classList.remove(ORIGINAL_BG_CLASS, ORIGINAL_HOVER_CLASS);
+                submitButton.classList.add(LOADING_BG_CLASS, LOADING_HOVER_CLASS); 
+                submitButton.textContent = LOADING_TEXT;
+                submitButton.disabled = true;
             }
-            // --- END: SUBMIT BUTTON RED STYLING ---
+            // --- End Red/Loading State ---
 
             const phoneInput = document.getElementById('phone');
             const phoneNumber = phoneInput.value.replace(/\D/g, '');
             if (phoneNumber.length !== 10) {
                 showMessage('Please enter a valid 10-digit phone number.', true);
-
-                // RESTORE BUTTON ON FAILURE
-                if (submitButton) {
-                    submitButton.classList.remove('bg-red-600', 'hover:bg-red-700');
-                    submitButton.classList.add('bg-22c55e', 'hover:bg-16a34a');
-                    submitButton.textContent = 'Submit Order and Pay Here';
-                    submitButton.disabled = false;
-                }
-                
+                resetButtonState(submitButton); // Reset button on validation failure
                 phoneInput.focus();
                 return; // Stop submission
             }
@@ -426,7 +436,11 @@
                 });
             });
 
-            if (!isValid) return; // Stop submission if student validation failed
+           if (!isValid) {
+                resetButtonState(submitButton); // Call reset function on validation failure
+                return; // Stop submission if student validation failed
+            }
+            
 
             // Collect other general form data
             for (let [key, value] of formData.entries()) {
@@ -442,6 +456,7 @@
             const currentTotal = parseFloat(document.getElementById('hiddenTotalCost').value);
             if (currentTotal <= 0) {
                 showMessage('Total number of photos must be greater than $0.00.', true);
+                resetButtonState(submitButton);
                 return;
             }
 
@@ -496,17 +511,32 @@
                     // >>> PAYMENT REDIRECT RE-ENABLED TO OPEN IN A NEW WINDOW <<<
                     setTimeout(() => {
                         window.open(BASE_PAYMENT_REDIRECT_URL, '_blank');
+                        resetButtonState(submitButton);
                     }, 3000); // Redirect after 3 seconds
                 }
 
             } catch (error) {
                 console.error('Error submitting form:', error);
                 showMessage('There was an error submitting your order. Please check the console for details.', true);
+                resetButtonState(submitButton);
             }
         });
+        
+        // Added event listeners to hide messages when the user starts typing again
+        document.getElementById('bandOrderForm').addEventListener('input', hideMessage);
+        document.getElementById('bandOrderForm').addEventListener('change', hideMessage);
 
         // Initialize total calculation on page load
-        window.onload = calculateTotal;
+        //window.onload = calculateTotal;
+        window.onload = () => {
+            calculateTotal();
+            // Ensure the button starts with the correct Tailwind classes
+            const submitButton = document.querySelector('button[type="submit"]');
+            if (submitButton) {
+                submitButton.classList.add(ORIGINAL_BG_CLASS, ORIGINAL_HOVER_CLASS);
+                submitButton.style.backgroundColor = ''; 
+            }
+        };
     </script>
 </body>
 </html>
