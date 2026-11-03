@@ -8,10 +8,10 @@
     <style>
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #f0f4f8; /* Light blue-gray background */
+            background-color: #f0f4f8;
             display: flex;
             justify-content: center;
-            align-items: flex-start; /* Align to top for longer forms */
+            align-items: flex-start;
             min-height: 100vh;
             padding: 20px;
             box-sizing: border-box;
@@ -22,8 +22,8 @@
             border-radius: 16px;
             box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
             width: 100%;
-            max-width: 650px; /* Slightly wider to accommodate larger thumbnails */
-            text-align: left; /* Align text left for form fields */
+            max-width: 650px;
+            text-align: left;
             margin-top: 20px;
             margin-bottom: 20px;
         }
@@ -31,7 +31,7 @@
             display: block;
             margin-bottom: 8px;
             font-weight: 500;
-            color: #374151; /* Darker gray for labels */
+            color: #374151;
         }
         input[type="text"],
         input[type="email"],
@@ -40,20 +40,20 @@
         select { 
             width: 100%;
             padding: 12px;
-            border: 1px solid #d1d5db; /* Light gray border */
+            border: 1px solid #d1d5db;
             border-radius: 8px;
             margin-bottom: 16px;
             box-sizing: border-box;
             font-size: 1rem;
-            color: #1f2937; /* Dark text */
+            color: #1f2937;
             transition: border-color 0.2s;
         }
         input:focus, select:focus {
-             border-color: #4f46e5; /* Highlight on focus */
+             border-color: #4f46e5;
              outline: none;
         }
         input[type="number"] {
-            -moz-appearance: textfield; /* Firefox */
+            -moz-appearance: textfield;
         }
         input::-webkit-outer-spin-button,
         input::-webkit-inner-spin-button {
@@ -61,14 +61,14 @@
             margin: 0;
         }
         .student-entry {
-            border: 1px dashed #a5b4fc; /* Light indigo dashed border */
+            border: 1px dashed #a5b4fc;
             padding: 16px;
             border-radius: 8px;
             margin-bottom: 16px;
-            background-color: #f5f6ff; /* Very light blue */
+            background-color: #f5f6ff;
         }
         .remove-student-btn {
-            background-color: #ef4444; /* Red */
+            background-color: #ef4444;
             color: white;
             padding: 8px 12px;
             border-radius: 8px;
@@ -78,10 +78,10 @@
             transition: background-color 0.2s ease;
         }
         .remove-student-btn:hover {
-            background-color: #dc2626; /* Darker red */
+            background-color: #dc2626;
         }
         .add-student-btn {
-            background-color: #4f46e5; /* Indigo */
+            background-color: #4f46e5;
             color: white;
             padding: 10px 16px;
             border-radius: 8px;
@@ -92,10 +92,10 @@
             transition: background-color 0.2s ease;
         }
         .add-student-btn:hover {
-            background-color: #4338ca; /* Darker indigo */
+            background-color: #4338ca;
         }
         button[type="submit"] {
-            background-color: #22c55e; /* Green */
+            background-color: #22c55e;
             color: white;
             padding: 14px 24px;
             border-radius: 8px;
@@ -106,22 +106,22 @@
             transition: background-color 0.2s ease, transform 0.1s ease;
         }
         button[type="submit"]:hover {
-            background-color: #16a34a; /* Darker green */
+            background-color: #16a34a;
             transform: translateY(-1px);
         }
         .message-box {
-            background-color: #d1fae5; /* Light green for success */
-            color: #065f46; /* Dark green text */
+            background-color: #d1fae5;
+            color: #065f46;
             padding: 16px;
             border-radius: 8px;
             margin-top: 20px;
             font-weight: 500;
             text-align: center;
-            display: none; /* Hidden by default */
+            display: none;
         }
         .message-box.error {
-            background-color: #fee2e2; /* Light red for error */
-            color: #991b1b; /* Dark red text */
+            background-color: #fee2e2;
+            color: #991b1b;
         }
         .payment-link-section {
             margin-top: 16px;
@@ -142,26 +142,32 @@
         <p class="text-gray-600 mb-2 text-center">All Photo Options are <span class="font-semibold text-indigo-600">$5.00 each</span>.</p>
         <p class="text-gray-600 mb-6 text-center">Review the sample options below before placing your order:</p>
 
-        <!-- LARGER 8x10 THUMBNAIL PHOTO SAMPLES -->
+        <!-- LANDSCAPE THUMBNAIL PHOTO SAMPLES -->
         <div class="mb-8 grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
             
             <!-- Formal Sample -->
             <div class="bg-gray-50 border border-gray-200 p-3 rounded-lg flex flex-col items-center">
-                <img src="formal_sample.jpg" alt="8x10 Formal Sample" class="w-36 h-44 object-cover rounded mb-2 border shadow-md" onerror="this.onerror=null;this.src='https://placehold.co/160x200/cccccc/000000?text=8x10+Formal';">
+                <div class="w-full h-32 bg-gray-100 rounded mb-2 flex items-center justify-center overflow-hidden border shadow-sm">
+                    <img src="formal_sample.jpg" alt="8x10 Formal Sample" class="w-full h-full object-contain" onerror="this.onerror=null;this.src='https://placehold.co/240x180/cccccc/000000?text=8x10+Formal';">
+                </div>
                 <p class="text-xs font-bold text-gray-800">8x10 Formal</p>
                 <p class="text-xs text-indigo-600 font-semibold">$5.00</p>
             </div>
 
             <!-- Fun Sample -->
             <div class="bg-gray-50 border border-gray-200 p-3 rounded-lg flex flex-col items-center">
-                <img src="fun_sample.jpg" alt="8x10 Fun Sample" class="w-36 h-44 object-cover rounded mb-2 border shadow-md" onerror="this.onerror=null;this.src='https://placehold.co/160x200/cccccc/000000?text=8x10+Fun';">
+                <div class="w-full h-32 bg-gray-100 rounded mb-2 flex items-center justify-center overflow-hidden border shadow-sm">
+                    <img src="fun_sample.jpg" alt="8x10 Fun Sample" class="w-full h-full object-contain" onerror="this.onerror=null;this.src='https://placehold.co/240x180/cccccc/000000?text=8x10+Fun';">
+                </div>
                 <p class="text-xs font-bold text-gray-800">8x10 Fun</p>
                 <p class="text-xs text-indigo-600 font-semibold">$5.00</p>
             </div>
 
             <!-- Portrait Sheet Sample -->
             <div class="bg-gray-50 border border-gray-200 p-3 rounded-lg flex flex-col items-center">
-                <img src="sheet_sample.jpg" alt="5x7 Portrait Sheet Sample" class="w-36 h-44 object-cover rounded mb-2 border shadow-md" onerror="this.onerror=null;this.src='https://placehold.co/160x200/cccccc/000000?text=5x7+Sheet';">
+                <div class="w-full h-32 bg-gray-100 rounded mb-2 flex items-center justify-center overflow-hidden border shadow-sm">
+                    <img src="sheet_sample.jpg" alt="5x7 Portrait Sheet Sample" class="w-full h-full object-contain" onerror="this.onerror=null;this.src='https://placehold.co/240x180/cccccc/000000?text=5x7+Sheet';">
+                </div>
                 <p class="text-xs font-bold text-gray-800">5x7 Portrait Sheet</p>
                 <p class="text-xs text-indigo-600 font-semibold">$5.00 (2 on sheet)</p>
             </div>
