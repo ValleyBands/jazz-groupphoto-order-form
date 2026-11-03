@@ -22,7 +22,7 @@
             border-radius: 16px;
             box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
             width: 100%;
-            max-width: 600px; /* Wider for more fields */
+            max-width: 650px; /* Slightly wider to accommodate larger thumbnails */
             text-align: left; /* Align text left for form fields */
             margin-top: 20px;
             margin-bottom: 20px;
@@ -37,7 +37,6 @@
         input[type="email"],
         input[type="tel"],
         input[type="number"],
-        /* Added select to apply base styling */
         select { 
             width: 100%;
             padding: 12px;
@@ -139,24 +138,34 @@
 </head>
 <body>
     <div class="container">
-        <h1 class="text-3xl font-bold text-gray-800 mb-6 text-center">Jazz Band Group Photo Order Form</h1>
+        <h1 class="text-3xl font-bold text-gray-800 mb-4 text-center">Jazz Band Photo Order Form</h1>
         <p class="text-gray-600 mb-2 text-center">All Photo Options are <span class="font-semibold text-indigo-600">$5.00 each</span>.</p>
-        <p class="text-gray-600 mb-6 text-center">Photo sizes: <span class="font-semibold text-indigo-600">8x10 Formal, 8x10 Fun, or 5x7 Portrait Sheet (2 on one sheet)</span>.</p>
+        <p class="text-gray-600 mb-6 text-center">Review the sample options below before placing your order:</p>
 
-        <!-- PHOTO OPTIONS SAMPLES -->
+        <!-- LARGER 8x10 THUMBNAIL PHOTO SAMPLES -->
         <div class="mb-8 grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
-            <div class="bg-gray-50 border border-gray-200 p-3 rounded-lg">
-                <img src="formal_sample.jpg" alt="8x10 Formal Sample" class="w-full h-32 object-cover rounded mb-2 border" onerror="this.onerror=null;this.src='https://placehold.co/200x150/cccccc/000000?text=8x10+Formal';">
-                <p class="text-xs font-bold text-gray-700">8x10 Formal ($5.00)</p>
+            
+            <!-- Formal Sample -->
+            <div class="bg-gray-50 border border-gray-200 p-3 rounded-lg flex flex-col items-center">
+                <img src="formal_sample.jpg" alt="8x10 Formal Sample" class="w-36 h-44 object-cover rounded mb-2 border shadow-md" onerror="this.onerror=null;this.src='https://placehold.co/160x200/cccccc/000000?text=8x10+Formal';">
+                <p class="text-xs font-bold text-gray-800">8x10 Formal</p>
+                <p class="text-xs text-indigo-600 font-semibold">$5.00</p>
             </div>
-            <div class="bg-gray-50 border border-gray-200 p-3 rounded-lg">
-                <img src="fun_sample.jpg" alt="8x10 Fun Sample" class="w-full h-32 object-cover rounded mb-2 border" onerror="this.onerror=null;this.src='https://placehold.co/200x150/cccccc/000000?text=8x10+Fun';">
-                <p class="text-xs font-bold text-gray-700">8x10 Fun ($5.00)</p>
+
+            <!-- Fun Sample -->
+            <div class="bg-gray-50 border border-gray-200 p-3 rounded-lg flex flex-col items-center">
+                <img src="fun_sample.jpg" alt="8x10 Fun Sample" class="w-36 h-44 object-cover rounded mb-2 border shadow-md" onerror="this.onerror=null;this.src='https://placehold.co/160x200/cccccc/000000?text=8x10+Fun';">
+                <p class="text-xs font-bold text-gray-800">8x10 Fun</p>
+                <p class="text-xs text-indigo-600 font-semibold">$5.00</p>
             </div>
-            <div class="bg-gray-50 border border-gray-200 p-3 rounded-lg">
-                <img src="sheet_sample.jpg" alt="5x7 Portrait Sheet Sample" class="w-full h-32 object-cover rounded mb-2 border" onerror="this.onerror=null;this.src='https://placehold.co/200x150/cccccc/000000?text=5x7+Sheet';">
-                <p class="text-xs font-bold text-gray-700">5x7 Portrait Sheet ($5.00)</p>
+
+            <!-- Portrait Sheet Sample -->
+            <div class="bg-gray-50 border border-gray-200 p-3 rounded-lg flex flex-col items-center">
+                <img src="sheet_sample.jpg" alt="5x7 Portrait Sheet Sample" class="w-36 h-44 object-cover rounded mb-2 border shadow-md" onerror="this.onerror=null;this.src='https://placehold.co/160x200/cccccc/000000?text=5x7+Sheet';">
+                <p class="text-xs font-bold text-gray-800">5x7 Portrait Sheet</p>
+                <p class="text-xs text-indigo-600 font-semibold">$5.00 (2 on sheet)</p>
             </div>
+
         </div>
 
         <form id="bandOrderForm" class="space-y-4">
@@ -221,7 +230,6 @@
     </div>
 
     <script>
-        // Define the price per photo
         const PRICE_PER_PHOTO = 5.00;
         let studentCounter = 1;
 
