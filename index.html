@@ -1,75 +1,520 @@
-function doPost(e) {
-  var lock = LockService.getScriptLock();
-  lock.tryLock(10000); // Wait up to 10 seconds to prevent concurrent overwrite issues
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jazz Band Group Photo Order Form</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f4f8; /* Light blue-gray background */
+            display: flex;
+            justify-content: center;
+            align-items: flex-start; /* Align to top for longer forms */
+            min-height: 100vh;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        .container {
+            background-color: #ffffff;
+            padding: 32px;
+            border-radius: 16px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 600px; /* Wider for more fields */
+            text-align: left; /* Align text left for form fields */
+            margin-top: 20px;
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #374151; /* Darker gray for labels */
+        }
+        input[type="text"],
+        input[type="email"],
+        input[type="tel"],
+        input[type="number"],
+        /* Added select to apply base styling */
+        select { 
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #d1d5db; /* Light gray border */
+            border-radius: 8px;
+            margin-bottom: 16px;
+            box-sizing: border-box;
+            font-size: 1rem;
+            color: #1f2937; /* Dark text */
+            transition: border-color 0.2s;
+        }
+        input:focus, select:focus {
+             border-color: #4f46e5; /* Highlight on focus */
+             outline: none;
+        }
+        input[type="number"] {
+            -moz-appearance: textfield; /* Firefox */
+        }
+        input::-webkit-outer-spin-button,
+        input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        .student-entry {
+            border: 1px dashed #a5b4fc; /* Light indigo dashed border */
+            padding: 16px;
+            border-radius: 8px;
+            margin-bottom: 16px;
+            background-color: #f5f6ff; /* Very light blue */
+        }
+        .remove-student-btn {
+            background-color: #ef4444; /* Red */
+            color: white;
+            padding: 8px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            margin-top: 8px;
+            transition: background-color 0.2s ease;
+        }
+        .remove-student-btn:hover {
+            background-color: #dc2626; /* Darker red */
+        }
+        .add-student-btn {
+            background-color: #4f46e5; /* Indigo */
+            color: white;
+            padding: 10px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            margin-top: 16px;
+            margin-bottom: 24px;
+            transition: background-color 0.2s ease;
+        }
+        .add-student-btn:hover {
+            background-color: #4338ca; /* Darker indigo */
+        }
+        button[type="submit"] {
+            background-color: #22c55e; /* Green */
+            color: white;
+            padding: 14px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1.1rem;
+            font-weight: 600;
+            width: 100%;
+            transition: background-color 0.2s ease, transform 0.1s ease;
+        }
+        button[type="submit"]:hover {
+            background-color: #16a34a; /* Darker green */
+            transform: translateY(-1px);
+        }
+        .message-box {
+            background-color: #d1fae5; /* Light green for success */
+            color: #065f46; /* Dark green text */
+            padding: 16px;
+            border-radius: 8px;
+            margin-top: 20px;
+            font-weight: 500;
+            text-align: center;
+            display: none; /* Hidden by default */
+        }
+        .message-box.error {
+            background-color: #fee2e2; /* Light red for error */
+            color: #991b1b; /* Dark red text */
+        }
+        .payment-link-section {
+            margin-top: 16px;
+            text-align: center;
+        }
+        .payment-link-section a {
+            color: #4f46e5;
+            text-decoration: underline;
+        }
+        .payment-link-section a:hover {
+            color: #4338ca;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="text-3xl font-bold text-gray-800 mb-6 text-center">Jazz Band Group Photo Order Form</h1>
+        <p class="text-gray-600 mb-2 text-center">All Photo Options are <span class="font-semibold text-indigo-600">$5.00 each</span>.</p>
+        <p class="text-gray-600 mb-6 text-center">Photo sizes: <span class="font-semibold text-indigo-600">8x10 Formal, 8x10 Fun, or 5x7 Portrait Sheet (2 on one sheet)</span>.</p>
 
-  try {
-    var doc = SpreadsheetApp.getActiveSpreadsheet();
-    var sheet = doc.getActiveSheet();
+        <!-- PHOTO OPTIONS SAMPLES -->
+        <div class="mb-8 grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
+            <div class="bg-gray-50 border border-gray-200 p-3 rounded-lg">
+                <img src="formal_sample.jpg" alt="8x10 Formal Sample" class="w-full h-32 object-cover rounded mb-2 border" onerror="this.onerror=null;this.src='https://placehold.co/200x150/cccccc/000000?text=8x10+Formal';">
+                <p class="text-xs font-bold text-gray-700">8x10 Formal ($5.00)</p>
+            </div>
+            <div class="bg-gray-50 border border-gray-200 p-3 rounded-lg">
+                <img src="fun_sample.jpg" alt="8x10 Fun Sample" class="w-full h-32 object-cover rounded mb-2 border" onerror="this.onerror=null;this.src='https://placehold.co/200x150/cccccc/000000?text=8x10+Fun';">
+                <p class="text-xs font-bold text-gray-700">8x10 Fun ($5.00)</p>
+            </div>
+            <div class="bg-gray-50 border border-gray-200 p-3 rounded-lg">
+                <img src="sheet_sample.jpg" alt="5x7 Portrait Sheet Sample" class="w-full h-32 object-cover rounded mb-2 border" onerror="this.onerror=null;this.src='https://placehold.co/200x150/cccccc/000000?text=5x7+Sheet';">
+                <p class="text-xs font-bold text-gray-700">5x7 Portrait Sheet ($5.00)</p>
+            </div>
+        </div>
 
-    // Setup headers if sheet is brand new
-    if (sheet.getLastRow() === 0) {
-      sheet.appendRow([
-        'Timestamp',
-        'Order ID',
-        'Parent Name',
-        'Email',
-        'Phone',
-        'Student Name',
-        'Jazz Band',
-        '8x10 Formal Qty',
-        '8x10 Fun Qty',
-        '5x7 Sheet Qty',
-        'Total Student Photos',
-        'Order Grand Total ($)'
-      ]);
-      sheet.getRange(1, 1, 1, 12).setFontWeight('bold').setBackground('#e0e7ff');
-    }
+        <form id="bandOrderForm" class="space-y-4">
+            <div>
+                <label for="parentName">Parent/Guardian Name:</label>
+                <input type="text" id="parentName" name="parentName" required>
+            </div>
 
-    // Generate a unique Order ID for this single submission
-    var orderId = 'ORD-' + new Date().getTime().toString().slice(-6);
-    var timestamp = new Date();
+            <div>
+                <label for="email">Email:</label>
+                <input type="email" id="email" name="email" required>
+            </div>
 
-    // Parse incoming data
-    var parentName = e.parameter.parentName || '';
-    var email = e.parameter.email || '';
-    var phone = e.parameter.phone || '';
-    var totalCost = e.parameter.totalCost || '0.00';
-    var students = JSON.parse(e.parameter.students || '[]');
+            <div>
+                <label for="phone">Phone Number:</label>
+                <input type="tel" id="phone" name="phone" oninput="formatPhoneNumber(this)" maxlength="12" placeholder="e.g., 123-456-7890" required>
+            </div>
 
-    // Append a row for each student included in the form
-    students.forEach(function(student) {
-      var formalQty = parseInt(student.formalQty) || 0;
-      var funQty = parseInt(student.funQty) || 0;
-      var sheetQty = parseInt(student.sheetQty) || 0;
-      var totalPhotos = parseInt(student.totalPhotos) || (formalQty + funQty + sheetQty);
+            <h2 class="text-2xl font-semibold text-gray-800 mt-8 mb-4 border-b pb-2">Student Information</h2>
+            <div id="studentsContainer">
+                <div class="student-entry" data-student-id="1">
+                    <h3 class="text-lg font-medium text-gray-700 mb-2">Student 1</h3>
+                    
+                    <label for="studentName_1">Student Name:</label>
+                    <input type="text" id="studentName_1" name="studentName_1" required>
 
-      sheet.appendRow([
-        timestamp,
-        orderId,
-        parentName,
-        email,
-        phone,
-        student.name,
-        student.jazzBand,
-        formalQty,
-        funQty,
-        sheetQty,
-        totalPhotos,
-        '$' + totalCost
-      ]);
-    });
+                    <label for="jazzBand_1">Jazz Band:</label>
+                    <select id="jazzBand_1" name="jazzBand_1" required>
+                        <option value="" disabled selected>Select Band</option>
+                        <option value="Basie band">Basie band</option>
+                        <option value="Ellington band">Ellington band</option>
+                        <option value="Jazz Orchestra">Jazz Orchestra</option>
+                        <option value="Jazz Ensemble">Jazz Ensemble</option>
+                    </select>
 
-    // Return success response for no-cors / Web App execution
-    return ContentService
-      .createTextOutput(JSON.stringify({ 'result': 'success', 'orderId': orderId }))
-      .setMimeType(ContentService.MimeType.JSON);
+                    <label for="numFormal_1">Number of 8x10 Formal Photos:</label>
+                    <input type="number" id="numFormal_1" name="numFormal_1" min="0" value="0" oninput="calculateTotal()" required>
 
-  } catch (error) {
-    return ContentService
-      .createTextOutput(JSON.stringify({ 'result': 'error', 'error': error.toString() }))
-      .setMimeType(ContentService.MimeType.JSON);
+                    <label for="numFun_1">Number of 8x10 Fun Photos:</label>
+                    <input type="number" id="numFun_1" name="numFun_1" min="0" value="0" oninput="calculateTotal()" required>
 
-  } finally {
-    lock.releaseLock();
-  }
-}
+                    <label for="numSheet_1">Number of 5x7 Portrait Sheets (2 portraits on one sheet):</label>
+                    <input type="number" id="numSheet_1" name="numSheet_1" min="0" value="0" oninput="calculateTotal()" required>
+                </div>
+            </div>
+
+            <button type="button" id="addStudentBtn" class="add-student-btn">Add Another Student</button>
+
+            <div class="bg-indigo-100 p-6 rounded-lg border-2 border-indigo-300 mt-8">
+                <p class="text-xl text-indigo-800 font-semibold mb-2 text-center">Total Cost for All Photos:</p>
+                <p id="totalCost" class="text-5xl font-extrabold text-indigo-700 text-center">$0.00</p>
+                <input type="hidden" id="hiddenTotalCost" name="totalCost" value="0.00">
+            </div>
+
+            <button type="submit" class="mt-8">Submit Order and Pay Here</button>
+        </form>
+
+        <div class="payment-link-section">
+            <p class="text-gray-600">If re-direct to payment site doesn't work please use this link: <a href="https://checkout.square.site/merchant/44QXX4R2B839B/checkout/AWBE6FFXZQALGDPUHMAAC46C" target="_blank">Payment Link</a></p>
+        </div>
+        <div id="messageBox" class="message-box"></div>
+    </div>
+
+    <script>
+        // Define the price per photo
+        const PRICE_PER_PHOTO = 5.00;
+        let studentCounter = 1;
+
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw7jq_enEN6xwYW1mPCANNnh5I1w3WETIEPf_u0LRONkAKYrAwx-xwd8Ny3LFktX3Zi/exec'; 
+        const BASE_PAYMENT_REDIRECT_URL = 'https://checkout.square.site/merchant/44QXX4R2B839B/checkout/MZPG4FERMHY4P5LDQ5HCVFZ2';
+
+        const ORIGINAL_BG_CLASS = 'bg-green-600';
+        const ORIGINAL_HOVER_CLASS = 'hover:bg-green-700';
+        const LOADING_BG_CLASS = 'bg-red-600';
+        const LOADING_HOVER_CLASS = 'hover:bg-red-700';
+        const ORIGINAL_TEXT = 'Submit Order and Pay Here';
+        const LOADING_TEXT = 'Submitting...';
+        
+        function formatPhoneNumber(input) {
+            let numbers = input.value.replace(/\D/g, '');
+            let formattedNumber = '';
+
+            if (numbers.length > 0) {
+                formattedNumber += numbers.substring(0, 3);
+            }
+            if (numbers.length >= 4) {
+                formattedNumber += '-' + numbers.substring(3, 6);
+            }
+            if (numbers.length >= 7) {
+                formattedNumber += '-' + numbers.substring(6, 10);
+            }
+
+            input.value = formattedNumber;
+        }
+
+        function calculateTotal() {
+            let totalPhotos = 0;
+            const photoInputs = document.querySelectorAll('input[name^="numFormal_"], input[name^="numFun_"], input[name^="numSheet_"]');
+
+            photoInputs.forEach(input => {
+                const numberOfPhotos = parseInt(input.value) || 0;
+                if (numberOfPhotos < 0) {
+                    input.value = 0; 
+                }
+                totalPhotos += parseInt(input.value) || 0;
+            });
+
+            const overallTotal = totalPhotos * PRICE_PER_PHOTO;
+            document.getElementById('totalCost').textContent = `$${overallTotal.toFixed(2)}`;
+            document.getElementById('hiddenTotalCost').value = overallTotal.toFixed(2);
+        }
+
+        document.getElementById('addStudentBtn').addEventListener('click', () => {
+            studentCounter++;
+            const studentsContainer = document.getElementById('studentsContainer');
+            const newStudentEntry = document.createElement('div');
+            newStudentEntry.classList.add('student-entry');
+            newStudentEntry.setAttribute('data-student-id', studentCounter);
+
+            newStudentEntry.innerHTML = `
+                <h3 class="text-lg font-medium text-gray-700 mb-2">Student ${studentCounter}</h3>
+                <label for="studentName_${studentCounter}">Student Name:</label>
+                <input type="text" id="studentName_${studentCounter}" name="studentName_${studentCounter}" required>
+
+                <label for="jazzBand_${studentCounter}">Jazz Band:</label>
+                <select id="jazzBand_${studentCounter}" name="jazzBand_${studentCounter}" required>
+                    <option value="" disabled selected>Select Band</option>
+                    <option value="Basie band">Basie band</option>
+                    <option value="Ellington band">Ellington band</option>
+                    <option value="Jazz Orchestra">Jazz Orchestra</option>
+                    <option value="Jazz Ensemble">Jazz Ensemble</option>
+                </select>
+
+                <label for="numFormal_${studentCounter}">Number of 8x10 Formal Photos:</label>
+                <input type="number" id="numFormal_${studentCounter}" name="numFormal_${studentCounter}" min="0" value="0" oninput="calculateTotal()" required>
+
+                <label for="numFun_${studentCounter}">Number of 8x10 Fun Photos:</label>
+                <input type="number" id="numFun_${studentCounter}" name="numFun_${studentCounter}" min="0" value="0" oninput="calculateTotal()" required>
+
+                <label for="numSheet_${studentCounter}">Number of 5x7 Portrait Sheets (2 portraits on one sheet):</label>
+                <input type="number" id="numSheet_${studentCounter}" name="numSheet_${studentCounter}" min="0" value="0" oninput="calculateTotal()" required>
+
+                <button type="button" class="remove-student-btn" onclick="removeStudent(this)">Remove Student</button>
+            `;
+            studentsContainer.appendChild(newStudentEntry);
+            calculateTotal();
+        });
+
+        function removeStudent(button) {
+            const studentEntry = button.closest('.student-entry');
+            if (studentEntry) {
+                studentEntry.remove();
+                calculateTotal();
+            }
+        }
+
+        function showMessage(message, isError = false) {
+            const messageBox = document.getElementById('messageBox');
+            messageBox.textContent = message;
+            messageBox.style.display = 'block';
+            messageBox.classList.toggle('error', isError);
+            setTimeout(() => {
+                messageBox.style.display = 'none';
+            }, 3000);
+        }
+
+        function resetStudentEntries() {
+            document.getElementById('studentsContainer').innerHTML = `
+                <div class="student-entry" data-student-id="1">
+                    <h3 class="text-lg font-medium text-gray-700 mb-2">Student 1</h3>
+                    <label for="studentName_1">Student Name:</label>
+                    <input type="text" id="studentName_1" name="studentName_1" required>
+
+                    <label for="jazzBand_1">Jazz Band:</label>
+                    <select id="jazzBand_1" name="jazzBand_1" required>
+                        <option value="" disabled selected>Select Band</option>
+                        <option value="Basie band">Basie band</option>
+                        <option value="Ellington band">Ellington band</option>
+                        <option value="Jazz Orchestra">Jazz Orchestra</option>
+                        <option value="Jazz Ensemble">Jazz Ensemble</option>
+                    </select>
+
+                    <label for="numFormal_1">Number of 8x10 Formal Photos:</label>
+                    <input type="number" id="numFormal_1" name="numFormal_1" min="0" value="0" oninput="calculateTotal()" required>
+
+                    <label for="numFun_1">Number of 8x10 Fun Photos:</label>
+                    <input type="number" id="numFun_1" name="numFun_1" min="0" value="0" oninput="calculateTotal()" required>
+
+                    <label for="numSheet_1">Number of 5x7 Portrait Sheets (2 portraits on one sheet):</label>
+                    <input type="number" id="numSheet_1" name="numSheet_1" min="0" value="0" oninput="calculateTotal()" required>
+                </div>
+            `;
+            studentCounter = 1;
+            calculateTotal();
+        }
+
+        function resetButtonState(submitButton) {
+            if (submitButton) {
+                submitButton.classList.remove(LOADING_BG_CLASS, LOADING_HOVER_CLASS);
+                submitButton.classList.add(ORIGINAL_BG_CLASS, ORIGINAL_HOVER_CLASS);
+                submitButton.textContent = ORIGINAL_TEXT;
+                submitButton.disabled = false;
+            }
+        }
+
+        document.getElementById('bandOrderForm').addEventListener('submit', async (event) => {
+            event.preventDefault();
+
+            const submitButton = event.submitter;
+
+            if (submitButton) {
+                submitButton.classList.remove(ORIGINAL_BG_CLASS, ORIGINAL_HOVER_CLASS);
+                submitButton.classList.add(LOADING_BG_CLASS, LOADING_HOVER_CLASS); 
+                submitButton.textContent = LOADING_TEXT;
+                submitButton.disabled = true;
+            }
+
+            const phoneInput = document.getElementById('phone');
+            const phoneNumber = phoneInput.value.replace(/\D/g, '');
+            if (phoneNumber.length !== 10) {
+                showMessage('Please enter a valid 10-digit phone number.', true);
+                resetButtonState(submitButton);
+                phoneInput.focus();
+                return;
+            }
+
+            const form = event.target;
+            const formData = new FormData(form);
+            const data = {};
+            const students = [];
+            let isValid = true;
+
+            document.querySelectorAll('.student-entry').forEach((entry) => {
+                if (!isValid) return;
+                
+                const studentId = entry.getAttribute('data-student-id');
+                const studentNameInput = document.getElementById(`studentName_${studentId}`);
+                const jazzBandInput = document.getElementById(`jazzBand_${studentId}`);
+                const numFormalInput = document.getElementById(`numFormal_${studentId}`);
+                const numFunInput = document.getElementById(`numFun_${studentId}`);
+                const numSheetInput = document.getElementById(`numSheet_${studentId}`);
+
+                if (!studentNameInput.value.trim()) {
+                    showMessage('Student name cannot be empty.', true);
+                    studentNameInput.focus();
+                    isValid = false; return;
+                }
+                if (!jazzBandInput.value.trim()) {
+                    showMessage('Please select a Jazz Band.', true);
+                    jazzBandInput.focus();
+                    isValid = false; return;
+                }
+
+                const formalQty = parseInt(numFormalInput.value) || 0;
+                const funQty = parseInt(numFunInput.value) || 0;
+                const sheetQty = parseInt(numSheetInput.value) || 0;
+                const totalStudentPhotos = formalQty + funQty + sheetQty;
+
+                if (totalStudentPhotos <= 0) {
+                    showMessage('Please enter a photo quantity greater than 0 for each student.', true);
+                    numFormalInput.focus();
+                    isValid = false; return;
+                }
+
+                students.push({
+                    name: studentNameInput.value,
+                    jazzBand: jazzBandInput.value,
+                    formalQty: formalQty,
+                    funQty: funQty,
+                    sheetQty: sheetQty,
+                    totalPhotos: totalStudentPhotos
+                });
+            });
+
+           if (!isValid) {
+                resetButtonState(submitButton);
+                return;
+           }
+
+            for (let [key, value] of formData.entries()) {
+                if (!key.startsWith('studentName_') && !key.startsWith('jazzBand_') && !key.startsWith('numFormal_') && !key.startsWith('numFun_') && !key.startsWith('numSheet_')) {
+                    data[key] = value;
+                }
+            }
+            
+            data['students'] = JSON.stringify(students);
+
+            const currentTotal = parseFloat(document.getElementById('hiddenTotalCost').value);
+            if (currentTotal <= 0) {
+                showMessage('Total number of photos must be greater than $0.00.', true);
+                resetButtonState(submitButton);
+                return;
+            }
+
+            const payload = new URLSearchParams(data).toString();
+
+            try {
+                let response;
+                let success = false;
+                const maxRetries = 3;
+                let delay = 1000;
+
+                for (let i = 0; i < maxRetries; i++) {
+                    try {
+                        response = await fetch(SCRIPT_URL, {
+                            method: 'POST',
+                            mode: 'no-cors',
+                            headers: {
+                                'Content-Type': 'application/x-www-form-urlencoded',
+                            },
+                            body: payload
+                        });
+                        success = true;
+                        break; 
+                    } catch (error) {
+                        console.error(`Attempt ${i + 1} failed:`, error);
+                        if (i < maxRetries - 1) {
+                            await new Promise(resolve => setTimeout(resolve, delay));
+                            delay *= 2;
+                        } else {
+                            throw new Error('Failed to submit form after multiple retries.');
+                        }
+                    }
+                }
+
+                if (success) {
+                    showMessage('Order data successfully submitted. Email confirmation sent. Opening payment link in new window in 3 seconds...', false);
+                    form.reset();
+                    resetStudentEntries();
+
+                    setTimeout(() => {
+                        window.open(BASE_PAYMENT_REDIRECT_URL, '_blank');
+                        resetButtonState(submitButton);
+                    }, 3000);
+                }
+
+            } catch (error) {
+                console.error('Error submitting form:', error);
+                showMessage('There was an error submitting your order. Please check the console for details.', true);
+                resetButtonState(submitButton);
+            }
+        });
+        
+        document.getElementById('bandOrderForm').addEventListener('input', hideMessage);
+        document.getElementById('bandOrderForm').addEventListener('change', hideMessage);
+
+        function hideMessage() {
+            document.getElementById('messageBox').style.display = 'none';
+        }
+
+        window.onload = () => {
+            calculateTotal();
+            const submitButton = document.querySelector('button[type="submit"]');
+            if (submitButton) {
+                submitButton.classList.add(ORIGINAL_BG_CLASS, ORIGINAL_HOVER_CLASS);
+                submitButton.style.backgroundColor = ''; 
+            }
+        };
+    </script>
+</body>
+</html>
