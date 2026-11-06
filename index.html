@@ -52,6 +52,11 @@
              border-color: #4f46e5;
              outline: none;
         }
+        input:disabled, select:disabled {
+            background-color: #f3f4f6;
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
         input[type="number"] {
             -moz-appearance: textfield;
         }
@@ -140,7 +145,8 @@
     <div class="container">
         <h1 class="text-3xl font-bold text-gray-800 mb-4 text-center">Jazz Band Photo Order Form</h1>
         <p class="text-gray-600 mb-2 text-center">All Photo Options are <span class="font-semibold text-indigo-600">$5.00 each</span>.</p>
-        <p class="text-gray-600 mb-6 text-center">Review the sample options below before placing your order:</p>
+        <p class="text-gray-600 mb-1 text-center">Review the sample options below before placing your order:</p>
+        <p class="text-xs text-red-600 mb-6 text-center font-medium">* Note: The 8x10 Fun Photo is not available for Basie Band.</p>
 
         <!-- LANDSCAPE THUMBNAIL PHOTO SAMPLES -->
         <div class="mb-8 grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
@@ -159,7 +165,7 @@
                 <div class="w-full h-32 bg-gray-100 rounded mb-2 flex items-center justify-center overflow-hidden border shadow-sm">
                     <img src="fun_sample.jpg" alt="8x10 Fun Sample" class="w-full h-full object-contain" onerror="this.onerror=null;this.src='https://placehold.co/240x180/cccccc/000000?text=8x10+Fun';">
                 </div>
-                <p class="text-xs font-bold text-gray-800">8x10 Fun</p>
+                <p class="text-xs font-bold text-gray-800">8x10 Fun <span class="text-[10px] text-red-500 font-normal">(Excludes Basie)</span></p>
                 <p class="text-xs text-indigo-600 font-semibold">$5.00</p>
             </div>
 
@@ -199,7 +205,7 @@
                     <input type="text" id="studentName_1" name="studentName_1" required>
 
                     <label for="jazzBand_1">Jazz Band:</label>
-                    <select id="jazzBand_1" name="jazzBand_1" required>
+                    <select id="jazzBand_1" name="jazzBand_1" onchange="handleBandChange(1)" required>
                         <option value="" disabled selected>Select Band</option>
                         <option value="Basie band">Basie band</option>
                         <option value="Studio Jazz">Studio Jazz</option>
@@ -210,7 +216,7 @@
                     <label for="numFormal_1">Number of 8x10 Formal Photos:</label>
                     <input type="number" id="numFormal_1" name="numFormal_1" min="0" value="0" oninput="calculateTotal()" required>
 
-                    <label for="numFun_1">Number of 8x10 Fun Photos:</label>
+                    <label for="numFun_1" id="labelFun_1">Number of 8x10 Fun Photos:</label>
                     <input type="number" id="numFun_1" name="numFun_1" min="0" value="0" oninput="calculateTotal()" required>
 
                     <label for="numSheet_1">Number of 5x7 Portrait Sheets (2 portraits on one sheet):</label>
@@ -266,16 +272,42 @@
             input.value = formattedNumber;
         }
 
+        function handleBandChange(studentId) {
+            const bandSelect = document.getElementById(`jazzBand_${studentId}`);
+            const funInput = document.getElementById(`numFun_${studentId}`);
+            const funLabel = document.getElementById(`labelFun_${studentId}`);
+
+            if (bandSelect.value === 'Basie band') {
+                funInput.value = 0;
+                funInput.disabled = true;
+                funInput.style.backgroundColor = '#f3f4f6';
+                if (funLabel) {
+                    funLabel.textContent = 'Number of 8x10 Fun Photos (Not available for Basie Band):';
+                    funLabel.style.color = '#9ca3af';
+                }
+            } else {
+                funInput.disabled = false;
+                funInput.style.backgroundColor = '';
+                if (funLabel) {
+                    funLabel.textContent = 'Number of 8x10 Fun Photos:';
+                    funLabel.style.color = '#374151';
+                }
+            }
+            calculateTotal();
+        }
+
         function calculateTotal() {
             let totalPhotos = 0;
             const photoInputs = document.querySelectorAll('input[name^="numFormal_"], input[name^="numFun_"], input[name^="numSheet_"]');
 
             photoInputs.forEach(input => {
-                const numberOfPhotos = parseInt(input.value) || 0;
-                if (numberOfPhotos < 0) {
-                    input.value = 0; 
+                if (!input.disabled) {
+                    const numberOfPhotos = parseInt(input.value) || 0;
+                    if (numberOfPhotos < 0) {
+                        input.value = 0; 
+                    }
+                    totalPhotos += parseInt(input.value) || 0;
                 }
-                totalPhotos += parseInt(input.value) || 0;
             });
 
             const overallTotal = totalPhotos * PRICE_PER_PHOTO;
@@ -296,7 +328,7 @@
                 <input type="text" id="studentName_${studentCounter}" name="studentName_${studentCounter}" required>
 
                 <label for="jazzBand_${studentCounter}">Jazz Band:</label>
-                <select id="jazzBand_${studentCounter}" name="jazzBand_${studentCounter}" required>
+                <select id="jazzBand_${studentCounter}" name="jazzBand_${studentCounter}" onchange="handleBandChange(${studentCounter})" required>
                     <option value="" disabled selected>Select Band</option>
                     <option value="Basie band">Basie band</option>
                     <option value="Studio Jazz">Studio Jazz</option>
@@ -307,7 +339,7 @@
                 <label for="numFormal_${studentCounter}">Number of 8x10 Formal Photos:</label>
                 <input type="number" id="numFormal_${studentCounter}" name="numFormal_${studentCounter}" min="0" value="0" oninput="calculateTotal()" required>
 
-                <label for="numFun_${studentCounter}">Number of 8x10 Fun Photos:</label>
+                <label for="numFun_${studentCounter}" id="labelFun_${studentCounter}">Number of 8x10 Fun Photos:</label>
                 <input type="number" id="numFun_${studentCounter}" name="numFun_${studentCounter}" min="0" value="0" oninput="calculateTotal()" required>
 
                 <label for="numSheet_${studentCounter}">Number of 5x7 Portrait Sheets (2 portraits on one sheet):</label>
@@ -345,7 +377,7 @@
                     <input type="text" id="studentName_1" name="studentName_1" required>
 
                     <label for="jazzBand_1">Jazz Band:</label>
-                    <select id="jazzBand_1" name="jazzBand_1" required>
+                    <select id="jazzBand_1" name="jazzBand_1" onchange="handleBandChange(1)" required>
                         <option value="" disabled selected>Select Band</option>
                         <option value="Basie band">Basie band</option>
                         <option value="Studio Jazz">Studio Jazz</option>
@@ -356,7 +388,7 @@
                     <label for="numFormal_1">Number of 8x10 Formal Photos:</label>
                     <input type="number" id="numFormal_1" name="numFormal_1" min="0" value="0" oninput="calculateTotal()" required>
 
-                    <label for="numFun_1">Number of 8x10 Fun Photos:</label>
+                    <label for="numFun_1" id="labelFun_1">Number of 8x10 Fun Photos:</label>
                     <input type="number" id="numFun_1" name="numFun_1" min="0" value="0" oninput="calculateTotal()" required>
 
                     <label for="numSheet_1">Number of 5x7 Portrait Sheets (2 portraits on one sheet):</label>
@@ -425,7 +457,7 @@
                 }
 
                 const formalQty = parseInt(numFormalInput.value) || 0;
-                const funQty = parseInt(numFunInput.value) || 0;
+                const funQty = jazzBandInput.value === 'Basie band' ? 0 : (parseInt(numFunInput.value) || 0);
                 const sheetQty = parseInt(numSheetInput.value) || 0;
                 const totalStudentPhotos = formalQty + funQty + sheetQty;
 
